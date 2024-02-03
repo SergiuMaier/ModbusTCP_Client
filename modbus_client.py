@@ -34,9 +34,8 @@ class ModbusClient(object):
             self.__connected = True
             self.__thread = threading.Thread(target=self.__listen, args=())
             self.__thread.start()
-            print("Modbus client connected to TCP network, IP Address: {0}, Port: {1}." .format(str(self.__ipAddress), str(self.__port)))
-            logging.info("Modbus client connected to TCP network, IP Address: {0}, Port: {1}." .format(str(self.__ipAddress), str(self.__port)))
-
+            print(f"Modbus client connected to TCP network, IP Address: {self.__ipAddress}, Port: {self.__port}.")
+            logging.info(f"Modbus client connected to TCP network, IP Address: {self.__ipAddress}, Port: {self.__port}.")
 
     def __listen(self):
         self.__stoplistening = False
@@ -45,7 +44,6 @@ class ModbusClient(object):
             while not self.__stoplistening:
                 if len(self.__receivedata) == 0:
                     self.__receivedata = bytearray()
-                    #self.__timeout = 500
                     if self.__tcpClientSocket is not None:
                         self.__receivedata = self.__tcpClientSocket.recv(256)
         except socket.timeout:
