@@ -8,7 +8,6 @@ class FunctionCode(IntEnum):
     WRITE_SINGLE_REGISTER = 6
     WRITE_MULTIPLE_REGISTERS = 16
 
-#@dataclass
 class MBAPHeader:
     transaction_identifier: int = 0
     protocol_identifier: int = 0
@@ -32,7 +31,6 @@ class MBAPHeader:
         self.transaction_identifier = data[5] | (data[4] << 8)
         self.unit_identifier = data[6]
         
-#@dataclass 
 class PDU:
     function_code: FunctionCode = FunctionCode.READ_HOLDING_REGISTERS
     data: bytearray = bytearray()
@@ -45,21 +43,21 @@ class PDU:
 
     def decode(self, data):
         self.function_code = data[0]
-        
         if self.function_code >= 128:
             exception_code = data[1]
-            if exception_code == Exceptions.ExceptionCodes.ILLEGAL_FUNCTION:
-                raise Exceptions.ModbusException("Exception code 01: ILLEGAL FUNCTION. The function code received in the query is not an allowable action for the slave.")
-            if exception_code == Exceptions.ExceptionCodes.ILLEGAL_DATA_ADDRESS:
-                raise Exceptions.ModbusException("Exception code 02: ILLEGAL DATA ADDRESS.The data address received in the query is not an allowable address for the slave.")
-            if exception_code == Exceptions.ExceptionCodes.ILLEGAL_DATA_VALUE:
-                raise Exceptions.ModbusException("Exception code 03: ILLEGAL DATA VALUE. A value contained in the query data field is not an allowable value for the slave.")
-            if exception_code == Exceptions.ExceptionCodes.SLAVE_DEVICE_FAILURE:
-                raise Exceptions.ModbusException("Exception code 04: SLAVE DEVOCE FAILURE. An unrecoverable error occurred while the slave was attempting to perform the requested action.")
-        
+            try:
+                if exception_code == Exceptions.ExceptionCodes.ILLEGAL_FUNCTION:
+                    raise Exceptions.ModbusException("Exception code 01: ILLEGAL FUNCTION. The function code received in the query is not an allowable action for the slave.")
+                if exception_code == Exceptions.ExceptionCodes.ILLEGAL_DATA_ADDRESS:
+                    raise Exceptions.ModbusException("Exception code 02: ILLEGAL DATA ADDRESS.The data address received in the query is not an allowable address for the slave.")
+                if exception_code == Exceptions.ExceptionCodes.ILLEGAL_DATA_VALUE:
+                    raise Exceptions.ModbusException("Exception code 03: ILLEGAL DATA VALUE. A value contained in the query data field is not an allowable value for the slave.")
+                if exception_code == Exceptions.ExceptionCodes.SLAVE_DEVICE_FAILURE:
+                    raise Exceptions.ModbusException("Exception code 04: SLAVE DEVOCE FAILURE. An unrecoverable error occurred while the slave was attempting to perform the requested action.")
+            except Exceptions.ModbusException as e:
+                print(e.message)
         self.data = data[1:len(data)]
 
-#@dataclass
 class ADU:
     mbap_header: MBAPHeader = MBAPHeader()
     pdu: PDU = PDU()
@@ -68,12 +66,12 @@ class ADU:
         return_value = bytearray()
         return_value.extend(self.mbap_header.build_frame())
         return_value.extend(self.pdu.build_frame())
-        print("----->Request frame: {0}" .format(str(return_value.hex(' '))))
-        logging.debug("----->Request frame: {0}" .format(str(return_value.hex(' '))))
+        print(f"----->Request frame: {return_value.hex(' ').upper()}")
+        logging.debug(f"----->Request frame: {return_value.hex(' ').upper()}")
         return return_value
     
     def decode(self, data: bytearray):
-        print("----->Response frame: {0}" .format(str(data.hex(' '))))
-        logging.debug("----->Response frame: {0}" .format(str(data.hex(' '))))
+        print(f"----->Request frame: {data.hex(' ').upper()}")
+        logging.debug(f"----->Request frame: {data.hex(' ').upper()}")
         self.mbap_header.decode(data)
         self.pdu.decode(data[7:len(data)])

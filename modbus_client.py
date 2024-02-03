@@ -116,30 +116,27 @@ class ModbusClient(object):
             return return_value
         
     def read_holding_registers(self, starting_address, quantity):
-        starting_address = "0x{0:04X}".format(starting_address)
-        print("Request to Read Holding Registers (FC03), starting address: {0}, quantity: {1}" .format(str(starting_address), str(quantity)))
-        logging.info("Request to Read Holding Registers (FC03), starting address: {0}, quantity: {1}" .format(str(starting_address), str(quantity)))
+        starting_address = f"0x{starting_address:04X}"
+        print(f"Request to Read Holding Registers (FC03), starting address: {starting_address}, quantity: {quantity}")
+        logging.info(f"Request to Read Holding Registers (FC03), starting address: {starting_address}, quantity: {quantity}")
         
         return_value = self.execute_command(starting_address, quantity, FunctionCode.READ_HOLDING_REGISTERS)
-        
-        hex_values = ["0x{0:04X}".format(value) for value in return_value]
-        formatted_values = ' '.join(hex_values)
-        print("Response to Holding Registers (FC03), values: {0}".format(str(formatted_values)))
-        logging.info("Response to Holding Registers (FC03), values: {0}".format(str(formatted_values)))
-        
+        formatted_values = ' '.join([f"0x{value:04X}" for value in return_value])
+        print(f"Response to Holding Registers (FC03), values: {formatted_values}")
+        logging.info(f"Response to Holding Registers (FC03), values: {formatted_values}")
         return return_value       
     
     def write_single_register(self, starting_address, value):
-        starting_address = "0x{0:04X}".format(starting_address)
-        print("Request to write single register (FC06), starting address: {0}, value: {1}" .format(str(starting_address), str(hex(value))))
-        logging.info("Request to write single register (FC06), starting address: {0}, value: {1}" .format(str(starting_address), str(hex(value))))
+        starting_address = f"0x{starting_address:04X}"
+        print(f"Request to write single register (FC06), starting address: {starting_address}, value: {value}")
+        logging.info(f"Request to write single register (FC06), starting address: {starting_address}, value: {value}")
         return_value = self.execute_command(starting_address, function_code=FunctionCode.WRITE_SINGLE_REGISTER, values=value)
         return return_value
     
     def write_multiple_registers(self, starting_address, values):
-        starting_address = "0x{0:04X}".format(starting_address)
-        print("Request to write multiple registers (FC16), starting address: {0}, values: {1}".format(str(starting_address)), str(hex(values)))
-        logging.info("Request to write multiple registers (FC16), starting address: {0}, values: {1}".format(str(starting_address), str(hex(values))))
+        starting_address = f"0x{starting_address:04X}"
+        print(f"Request to write multiple registers (FC16), starting address: {starting_address}, values: {values}".format(str(starting_address)), str(hex(values)))
+        logging.info(f"Request to write multiple registers (FC16), starting address: {starting_address}, values: {values}".format(str(starting_address), str(hex(values))))
         return_value = self.execute_command(starting_address, function_code=FunctionCode.WRITE_MULTIPLE_REGISTERS,values=values)
         return return_value
     
